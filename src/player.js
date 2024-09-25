@@ -1,11 +1,15 @@
 const { GameBoard } = require("./gameboard");
 
 class Player {
-  #gameboard;
+  #gameBoard;
   #isComputer;
 
   constructor(isComputer = false) {
-    this.#gameboard = new GameBoard();
+    this.#gameBoard = new GameBoard();
     this.#isComputer = isComputer;
+  }
+
+  get gameBoard() {
+    return this.#gameBoard;
   }
 }
