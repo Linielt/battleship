@@ -10,6 +10,7 @@ let playerOne = new Player();
 let playerTwo = new Player();
 let prevPlayer = playerTwo;
 let gamemode = Gamemodes.SINGLEPLAYER;
+let isGameOver = false;
 
 const renderGameBoard = (table, gameboard) => {
   const gameBoardGrid = gameboard.grid;
