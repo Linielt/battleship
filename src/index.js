@@ -5,6 +5,7 @@ import "./styles.css";
 
 const playerOneTable = document.getElementById("player-one-table");
 const playerTwoTable = document.getElementById("player-two-table");
+const shipLengths = [5, 4, 3, 3, 2];
 
 let playerOne = new Player();
 let playerTwo = new Player();
@@ -102,26 +103,24 @@ const renderOpponentGameBoard = (table, gameboard) => {
 
           if (prevPlayer === playerTwo && !isGameOver) {
             if (gamemode === Gamemodes.SINGLEPLAYER) {
+              renderOpponentGameBoard(playerTwoTable, playerTwo.gameBoard); // Render attack made from human to computer first
+
               setTimeout(() => {
-                playerTwo.makeComputerMove(playerOne.gameBoard);
+                playerTwo.makeComputerMove(playerOne.gameBoard); // Make this be better or something or change the timing
                 renderGameBoard(playerOneTable, playerOne.gameBoard);
                 renderOpponentGameBoard(playerTwoTable, playerTwo.gameBoard);
                 checkGameState();
               }, 500);
             } else if (gamemode === Gamemodes.MULTIPLAYER) {
-              setTimeout(() => {
-                prevPlayer = playerOne; // TODO - Add delay when switching displays or add warning before this triggers
-                renderGameBoard(playerTwoTable, playerTwo.gameBoard);
-                renderOpponentGameBoard(playerOneTable, playerOne.gameBoard);
-              }, 500);
+              prevPlayer = playerOne; // TODO - Add delay when switching displays or add warning before this triggers
+              renderGameBoard(playerTwoTable, playerTwo.gameBoard);
+              renderOpponentGameBoard(playerOneTable, playerOne.gameBoard);
             }
           } else if (prevPlayer === playerOne && !isGameOver) {
             if (gamemode === Gamemodes.MULTIPLAYER) {
-              setTimeout(() => {
-                prevPlayer = playerTwo;
-                renderGameBoard(playerOneTable, playerOne.gameBoard);
-                renderOpponentGameBoard(playerTwoTable, playerTwo.gameBoard);
-              }, 500);
+              prevPlayer = playerTwo;
+              renderGameBoard(playerOneTable, playerOne.gameBoard);
+              renderOpponentGameBoard(playerTwoTable, playerTwo.gameBoard);
             }
           }
         });
@@ -150,8 +149,34 @@ const checkGameState = () => {
   }
 };
 
+const placeShipsRandomly = (gameboard) => {
+  for (let length of shipLengths) {
+    let shipPlaced = false;
+    while (!shipPlaced) {
+      let randomX = Math.floor(Math.random() * 10);
+      let randomY = Math.floor(Math.random() * 10);
+
+      let isHorizontal = Math.random() < 0.5;
+
+      if (isHorizontal) {
+        shipPlaced = gameboard.placeShip(
+          [randomY, randomX],
+          [randomY, randomX - length + 1]
+        );
+      } else if (!isHorizontal) {
+        shipPlaced = gameboard.placeShip(
+          [randomY, randomX],
+          [randomY - length + 1, randomX]
+        );
+      }
+    }
+  }
+};
+
 // Testing code
-playerOne.gameBoard.placeShip([0, 0], [0, 3]);
-playerTwo.gameBoard.placeShip([9, 6], [9, 9]);
+// playerOne.gameBoard.placeShip([0, 0], [0, 3]);
+// playerTwo.gameBoard.placeShip([9, 6], [9, 9]);
+placeShipsRandomly(playerOne.gameBoard);
+placeShipsRandomly(playerTwo.gameBoard);
 renderGameBoard(playerOneTable, playerOne.gameBoard);
 renderOpponentGameBoard(playerTwoTable, playerTwo.gameBoard);

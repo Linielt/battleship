@@ -24,7 +24,11 @@ export class GameBoard {
   }
 
   placeShip(startPos, endPos) {
-    if (!this.isOnBoard(startPos) || !this.isOnBoard(endPos)) {
+    if (
+      !this.isOnBoard(startPos) ||
+      !this.isOnBoard(endPos) ||
+      this.isShipWithinRange(startPos, endPos)
+    ) {
       return false;
     }
 
@@ -37,16 +41,16 @@ export class GameBoard {
     let ship = new Ship(shipLength);
 
     for (
-      let i = Math.min(startPos[0], endPos[0]);
-      i <= Math.max(startPos[0], endPos[0]);
-      i++
+      let y = Math.min(startPos[0], endPos[0]);
+      y <= Math.max(startPos[0], endPos[0]);
+      y++
     ) {
       for (
-        let j = Math.min(startPos[1], endPos[1]);
-        j <= Math.max(startPos[1], endPos[1]);
-        j++
+        let x = Math.min(startPos[1], endPos[1]);
+        x <= Math.max(startPos[1], endPos[1]);
+        x++
       ) {
-        this.#grid[i][j] = ship;
+        this.#grid[y][x] = ship;
       }
     }
 
