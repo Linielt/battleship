@@ -14,10 +14,10 @@ export const displayGameBoard = (table, gameboard) => {
     for (let x = 0; x < gameBoardGrid[y].length; x++) {
       const gameBoardCell = document.createElement("td");
       gameBoardCell.className = "battleship-cell";
+      gameBoardCell.setAttribute("data-x", String(x));
+      gameBoardCell.setAttribute("data-y", String(y));
       const gameBoardCellContent = document.createElement("div");
       gameBoardCellContent.className = "battleship-cell-content";
-      gameBoardCellContent.setAttribute("data-x", String(x));
-      gameBoardCellContent.setAttribute("data-y", String(y));
 
       let isShip = gameBoardGrid[y][x] instanceof Ship;
       let isSunk = false;
@@ -59,10 +59,10 @@ export const displayEnemyGameBoard = (table, gameboard) => {
     for (let x = 0; x < gameBoardGrid[y].length; x++) {
       const gameBoardCell = document.createElement("td");
       gameBoardCell.className = "battleship-cell";
+      gameBoardCell.setAttribute("data-x", String(x));
+      gameBoardCell.setAttribute("data-y", String(y));
       const gameBoardCellContent = document.createElement("div");
       gameBoardCellContent.className = "battleship-cell-content";
-      gameBoardCellContent.setAttribute("data-x", String(x));
-      gameBoardCellContent.setAttribute("data-y", String(y));
 
       let isShip = gameBoardGrid[y][x] instanceof Ship;
       let isSunk = false;
