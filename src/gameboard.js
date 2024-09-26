@@ -15,6 +15,14 @@ export class GameBoard {
     this.#ships = [];
   }
 
+  get grid() {
+    return this.#grid;
+  }
+
+  get attackedGrid() {
+    return this.#attackedGrid;
+  }
+
   placeShip(startPos, endPos) {
     if (!this.isOnBoard(startPos) || !this.isOnBoard(endPos)) {
       return false;

@@ -1,6 +1,6 @@
 const { GameBoard } = require("./gameboard");
 
-class Player {
+export class Player {
   #gameBoard;
   #isComputer;
 

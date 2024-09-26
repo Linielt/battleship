@@ -1,5 +1,42 @@
+.battleship-row {
+    display: flex;
+}
+
 .battleship-cell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 40px;
     height: 40px;
     border: solid black 1px;
+}
+
+.battleship-cell-content {
+    background: transparent;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    text-align: center;
+}
+
+.battleship-cell {
+    background-color: #1581fc;
+}
+
+.ship {
+    background-color: #33EE33;
+}
+
+.attacked {
+    background: #EE6666;
+}
+
+.not-sunk {
+    background-color: #11AA11;
+}
+
+.sunk {
+    background-color: #EE1111;
 }
