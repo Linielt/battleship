@@ -98,13 +98,15 @@ const renderOpponentGameBoard = (table, gameboard) => {
       if (!gameBoardAttackedGrid[y][x]) {
         gameBoardCell.addEventListener("click", () => {
           gameboard.receiveAttack([y, x]);
+          checkGameState();
 
-          if (prevPlayer === playerTwo) {
+          if (prevPlayer === playerTwo && !isGameOver) {
             if (gamemode === Gamemodes.SINGLEPLAYER) {
               setTimeout(() => {
                 playerTwo.makeComputerMove(playerOne.gameBoard);
                 renderGameBoard(playerOneTable, playerOne.gameBoard);
                 renderOpponentGameBoard(playerTwoTable, playerTwo.gameBoard);
+                checkGameState();
               }, 500);
             } else if (gamemode === Gamemodes.MULTIPLAYER) {
               setTimeout(() => {
@@ -113,7 +115,7 @@ const renderOpponentGameBoard = (table, gameboard) => {
                 renderOpponentGameBoard(playerOneTable, playerOne.gameBoard);
               }, 500);
             }
-          } else if (prevPlayer === playerOne) {
+          } else if (prevPlayer === playerOne && !isGameOver) {
             if (gamemode === Gamemodes.MULTIPLAYER) {
               setTimeout(() => {
                 prevPlayer = playerTwo;
@@ -129,5 +131,27 @@ const renderOpponentGameBoard = (table, gameboard) => {
   }
 };
 
+const checkGameState = () => {
+  if (playerOne.gameBoard.areAllShipsSunk()) {
+    console.log("Player Two wins!"); // Placeholder
+    isGameOver = true;
+    renderGameBoard(playerOneTable, playerOne.gameBoard);
+    renderGameBoard(playerTwoTable, playerTwo.gameBoard);
+  } else if (playerTwo.gameBoard.areAllShipsSunk()) {
+    console.log("Player One Wins!"); // Placeholder
+    isGameOver = true;
+  } else {
+    return;
+  }
+
+  if (isGameOver) {
+    renderGameBoard(playerOneTable, playerOne.gameBoard);
+    renderGameBoard(playerTwoTable, playerTwo.gameBoard);
+  }
+};
+
+// Testing code
+playerOne.gameBoard.placeShip([0, 0], [0, 3]);
+playerTwo.gameBoard.placeShip([9, 6], [9, 9]);
 renderGameBoard(playerOneTable, playerOne.gameBoard);
 renderOpponentGameBoard(playerTwoTable, playerTwo.gameBoard);
