@@ -3,6 +3,7 @@ import { Ship } from "./ship";
 import { Gamemodes } from "./gamemode";
 import "./styles.css";
 
+const gamemodeForm = document.getElementById("gamemode-selection-form");
 const playerOneTable = document.getElementById("player-one-table");
 const playerTwoTable = document.getElementById("player-two-table");
 const shipLengths = [5, 4, 3, 3, 2];
@@ -173,10 +174,39 @@ const placeShipsRandomly = (gameboard) => {
   }
 };
 
+// const selectGamemode = () => {
+//   const gamemodeForm = document.getElementById("gamemode-selection-form");
+// };
+
+const resetGame = () => {
+  playerOne = new Player();
+  playerTwo = new Player();
+  isGameOver = false;
+  prevPlayer = playerTwo;
+};
+
+gamemodeForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  let selectedGamemode = document.querySelector(
+    'input[name="rate"]:checked'
+  ).value;
+  gamemodeForm.style.display = "none";
+  // Hide form
+  // Display pre game placement dependant on gamemode selected and make the logic for that
+  // Before this though, settle the placing ships thing first
+  if ((selectedGamemode = "singleplayer")) {
+    gamemode = Gamemodes.SINGLEPLAYER;
+    resetGame();
+  } else if ((selectedGamemode = "multiplayer")) {
+    gamemode = Gamemodes.MULTIPLAYER;
+    resetGame();
+  }
+});
+
 // Testing code
 // playerOne.gameBoard.placeShip([0, 0], [0, 3]);
 // playerTwo.gameBoard.placeShip([9, 6], [9, 9]);
-placeShipsRandomly(playerOne.gameBoard);
-placeShipsRandomly(playerTwo.gameBoard);
-renderGameBoard(playerOneTable, playerOne.gameBoard);
-renderOpponentGameBoard(playerTwoTable, playerTwo.gameBoard);
+// placeShipsRandomly(playerOne.gameBoard); // Move these to condition based code based on gamemode selected and buttons and such
+// placeShipsRandomly(playerTwo.gameBoard);
+// renderGameBoard(playerOneTable, playerOne.gameBoard);
+// renderOpponentGameBoard(playerTwoTable, playerTwo.gameBoard);

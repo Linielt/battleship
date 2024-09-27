@@ -9,20 +9,51 @@
     <header>
 
     </header>
+    <nav>
+        <h3>Battleship</h3>
+    </nav>
     <main>
-        <div class="gameboard-container">
-            <h2>Player One Gameboard</h2>
-            <div class="gameboard">
-                <table class="battleship-table" id="player-one-table">
-                    
-                </table>
+        <div class="battleship-pre-game-container">
+            <form id="gamemode-selection-form">
+                <fieldset>
+                    <legend>Please select the gamemode</legend>
+                    <div id="gamemode-select">
+                        <input type="radio" id="singleplayer" name="gamemode" value="singleplayer" checked />
+                        <label for="singleplayer">Single Player</label>
+                        
+                        <input type="radio" id="multiplayer" name="gamemode" value="multiplayer" />
+                        <label for="multiplayer">Multiplayer</label>
+                    </div>
+                    <button type="submit">Start game</button>
+                </fieldset>
+            </form>
+            <div class="ship-placement-container">
+                <div class="gameboard-container">
+                    <h2>Pre-game ship placement</h2>
+                    <h3 id="player-to-place-ships-header"></h3>
+                    <div class="gameboard">
+                        <table class="battleship-table" id="pre-game-ship-placement-table">
+
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="gameboard-container">
-            <h2>Player Two Gameboard</h2>
-            <table class="battleship-table" id="player-two-table">
-
-            </table>
+        <div class="battleship=main-game-container"> // Hide this with display: none later
+            <div class="gameboard-container">
+                <h2>Player One Gameboard</h2>
+                <div class="gameboard">
+                    <table class="battleship-table" id="player-one-table">
+                        
+                    </table>
+                </div>
+            </div>
+            <div class="gameboard-container">
+                <h2>Player Two Gameboard</h2>
+                <table class="battleship-table" id="player-two-table">
+    
+                </table>
+            </div>
         </div>
     </main>
     <footer>
