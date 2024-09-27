@@ -4,6 +4,9 @@ import { Gamemodes } from "./gamemode";
 import "./styles.css";
 
 const gamemodeForm = document.getElementById("gamemode-selection-form");
+const gameOverDialog = document.getElementById("gameover-dialog");
+const newGameButton = document.getElementById("new-game-button");
+const winnerText = document.getElementById("winner-text");
 const playerOneTable = document.getElementById("player-one-table");
 const playerTwoTable = document.getElementById("player-two-table");
 const shipLengths = [5, 4, 3, 3, 2];
@@ -109,7 +112,6 @@ const renderOpponentGameBoard = (table, gameboard) => {
               setTimeout(() => {
                 playerTwo.makeComputerMove(playerOne.gameBoard); // Make this be better or something or change the timing
                 renderGameBoard(playerOneTable, playerOne.gameBoard);
-                renderOpponentGameBoard(playerTwoTable, playerTwo.gameBoard);
                 checkGameState();
               }, 500);
             } else if (gamemode === Gamemodes.MULTIPLAYER) {
@@ -133,12 +135,12 @@ const renderOpponentGameBoard = (table, gameboard) => {
 
 const checkGameState = () => {
   if (playerOne.gameBoard.areAllShipsSunk()) {
-    console.log("Player Two wins!"); // Placeholder
+    winnerText.innerHTML = "Player Two wins!";
+    gameOverDialog.showModal();
     isGameOver = true;
-    renderGameBoard(playerOneTable, playerOne.gameBoard);
-    renderGameBoard(playerTwoTable, playerTwo.gameBoard);
   } else if (playerTwo.gameBoard.areAllShipsSunk()) {
-    console.log("Player One Wins!"); // Placeholder
+    winnerText.innerHTML = "Player One wins!";
+    gameOverDialog.showModal();
     isGameOver = true;
   } else {
     return;
@@ -183,24 +185,42 @@ const resetGame = () => {
   playerTwo = new Player();
   isGameOver = false;
   prevPlayer = playerTwo;
+  placeShipsRandomly(playerOne.gameBoard);
+  placeShipsRandomly(playerTwo.gameBoard);
+  renderGameBoard(playerOneTable, playerOne.gameBoard);
+  renderOpponentGameBoard(playerTwoTable, playerTwo.gameBoard);
 };
 
 gamemodeForm.addEventListener("submit", (e) => {
   e.preventDefault();
   let selectedGamemode = document.querySelector(
-    'input[name="rate"]:checked'
+    'input[name="gamemode"]:checked'
   ).value;
   gamemodeForm.style.display = "none";
   // Hide form
   // Display pre game placement dependant on gamemode selected and make the logic for that
   // Before this though, settle the placing ships thing first
-  if ((selectedGamemode = "singleplayer")) {
+  if (selectedGamemode === "singleplayer") {
     gamemode = Gamemodes.SINGLEPLAYER;
     resetGame();
-  } else if ((selectedGamemode = "multiplayer")) {
+  } else if (selectedGamemode === "multiplayer") {
     gamemode = Gamemodes.MULTIPLAYER;
-    resetGame();
+    resetGame(); // Make changes to this later
   }
+
+  document.getElementById("battleship-pre-game-container").style.display =
+    "none";
+  document.getElementById("battleship-main-game-container").style.display =
+    "inline-block";
+});
+
+newGameButton.addEventListener("click", () => {
+  gameOverDialog.close();
+  gamemodeForm.style.display = "block";
+  document.getElementById("battleship-pre-game-container").style.display =
+    "block";
+  document.getElementById("battleship-main-game-container").style.display =
+    "none";
 });
 
 // Testing code

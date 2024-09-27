@@ -10,7 +10,7 @@
         <h3>Battleship</h3>
     </header>
     <main>
-        <div class="battleship-pre-game-container">
+        <div id="battleship-pre-game-container">
             <form id="gamemode-selection-form">
                 <fieldset>
                     <legend>Please select the gamemode</legend>
@@ -26,7 +26,6 @@
             </form>
             <div class="ship-placement-container">
                 <div class="gameboard-container">
-                    <h2>Pre-game ship placement</h2>
                     <h3 id="player-to-place-ships-header"></h3>
                     <div class="gameboard">
                         <table class="battleship-table" id="pre-game-ship-placement-table">
@@ -36,9 +35,8 @@
                 </div>
             </div>
         </div>
-        <div class="battleship=main-game-container">
+        <div id="battleship-main-game-container">
             <div class="gameboard-container">
-                <h2>Player One Gameboard</h2>
                 <div class="gameboard">
                     <table class="battleship-table" id="player-one-table">
                         
@@ -46,15 +44,15 @@
                 </div>
             </div>
             <div class="gameboard-container">
-                <h2>Player Two Gameboard</h2>
                 <table class="battleship-table" id="player-two-table">
     
                 </table>
             </div>
         </div>
-        <div id="ships-to-be-placed">
-
-        </div>
+        <dialog id="gameover-dialog">
+            <p id="winner-text"></p>
+            <button type="button" id="new-game-button">New Game</button>
+        </dialog>
     </main>
     <footer>
 
