@@ -125,13 +125,28 @@ const renderShipPlacementButtons = (table, gameboard) => {
     if (indexOfShipToBePlaced === shipLengths.length) {
       indexOfShipToBePlaced = 0;
 
-      if (currentPlayer === playerOne) {
+      if (currentPlayer === playerOne && gamemode === Gamemodes.SINGLEPLAYER) {
+        placeShipsRandomly(playerTwo.gameBoard);
+        renderGameBoard(playerOneTable, playerOne.gameBoard);
+        renderOpponentGameBoard(playerTwoTable, playerTwo.gameBoard);
+        currentStatus.innerHTML = "Player One's turn";
+        document.getElementById("battleship-pre-game-container").style.display =
+          "none";
+        document.getElementById(
+          "battleship-main-game-container"
+        ).style.display = "inline-block";
+      }
+      if (currentPlayer === playerOne && gamemode === Gamemodes.MULTIPLAYER) {
         renderShipPlacementGameBoard(
           preGameShipPlacementTable,
           playerTwo.gameBoard
         );
         currentPlayer = playerTwo;
-      } else if (currentPlayer === playerTwo) {
+        currentStatus.innerHTML = "Player Two Ship Placement";
+      } else if (
+        currentPlayer === playerTwo &&
+        gamemode === Gamemodes.MULTIPLAYER
+      ) {
         renderGameBoard(playerOneTable, playerOne.gameBoard);
         renderOpponentGameBoard(playerTwoTable, playerTwo.gameBoard);
         currentStatus.innerHTML = "Player One's turn";
@@ -336,22 +351,25 @@ const renderOpponentGameBoard = (table, gameboard) => {
           if (currentPlayer === playerOne && !isGameOver) {
             if (gamemode === Gamemodes.SINGLEPLAYER) {
               renderOpponentGameBoard(playerTwoTable, playerTwo.gameBoard); // Render attack made from human to computer first
-
+              currentStatus.innerHTML = "Player Two's turn";
               setTimeout(() => {
                 playerTwo.makeComputerMove(playerOne.gameBoard); // Make this be better or something or change the timing
                 renderGameBoard(playerOneTable, playerOne.gameBoard);
+                currentStatus.innerHTML = "Player One's turn";
                 checkGameState();
               }, 500);
             } else if (gamemode === Gamemodes.MULTIPLAYER) {
               currentPlayer = playerTwo; // TODO - Add delay when switching displays or add warning before this triggers
               renderGameBoard(playerTwoTable, playerTwo.gameBoard);
               renderOpponentGameBoard(playerOneTable, playerOne.gameBoard);
+              currentStatus.innerHTML = "Player Two's turn";
             }
           } else if (currentPlayer === playerTwo && !isGameOver) {
             if (gamemode === Gamemodes.MULTIPLAYER) {
               currentPlayer = playerOne;
               renderGameBoard(playerOneTable, playerOne.gameBoard);
               renderOpponentGameBoard(playerTwoTable, playerTwo.gameBoard);
+              currentStatus.innerHTML = "Player One's turn";
             }
           }
         });
@@ -414,10 +432,6 @@ const resetGame = () => {
   playerTwo = new Player();
   isGameOver = false;
   currentPlayer = playerOne;
-  // placeShipsRandomly(playerOne.gameBoard);
-  // placeShipsRandomly(playerTwo.gameBoard);
-  // renderGameBoard(playerOneTable, playerOne.gameBoard);
-  // renderOpponentGameBoard(playerTwoTable, playerTwo.gameBoard);
 };
 
 gamemodeForm.addEventListener("submit", (e) => {
@@ -442,7 +456,7 @@ gamemodeForm.addEventListener("submit", (e) => {
   // Make it so the gamemode select is hidden after selection
   // Then dependant on the gamemode, do logic of placing ships on the respective gameboards
   // Start game
-  currentStatus.textContent = "Placing ships";
+  currentStatus.textContent = "Player One Ship Placement";
   gamemodeForm.style.display = "none";
   shipPlacementContainer.style.display = "inline-block";
   renderShipPlacementGameBoard(preGameShipPlacementTable, playerOne.gameBoard);
@@ -455,8 +469,10 @@ newGameButton.addEventListener("click", () => {
   gamemodeForm.style.display = "block";
   document.getElementById("battleship-pre-game-container").style.display =
     "block";
+  shipPlacementContainer.style.display = "none";
   document.getElementById("battleship-main-game-container").style.display =
     "none";
+  currentStatus.innerHTML = "Gamemode Selection";
 });
 
 // Testing code
