@@ -2,6 +2,7 @@ import { Player } from "./player";
 import { Ship } from "./ship";
 import { Gamemodes } from "./gamemode";
 import "./styles.css";
+import { GameBoard } from "./gameboard";
 
 const gamemodeForm = document.getElementById("gamemode-selection-form");
 const shipPlacementContainer = document.getElementById(
@@ -10,7 +11,7 @@ const shipPlacementContainer = document.getElementById(
 const preGameShipPlacementTable = document.getElementById(
   "pre-game-ship-placement-table"
 );
-const rotateButton = document.getElementById("rotate-ship-button");
+// const rotateButton = document.getElementById("rotate-ship-button");
 const currentStatus = document.getElementById("current-status");
 const gameOverDialog = document.getElementById("gameover-dialog");
 const newGameButton = document.getElementById("new-game-button");
@@ -21,7 +22,7 @@ const shipLengths = [5, 4, 3, 3, 2];
 
 let playerOne = new Player();
 let playerTwo = new Player();
-let prevPlayer = playerTwo;
+let currentPlayer = playerOne;
 let gamemode = Gamemodes.SINGLEPLAYER;
 let isGameOver = false;
 let indexOfShipToBePlaced = 0;
@@ -72,13 +73,83 @@ const renderGameBoard = (table, gameboard) => {
   }
 };
 
-rotateButton.addEventListener("click", () => {
-  if (orientation === "h") {
-    orientation = "v";
-  } else if (orientation === "v") {
-    orientation = "h";
-  }
-});
+const renderShipPlacementButtons = (table, gameboard) => {
+  const shipPlacementButtonsContainer = document.getElementById(
+    "ship-placement-buttons-container"
+  );
+
+  shipPlacementButtonsContainer.innerHTML = "";
+
+  const rotateButton = document.createElement("button");
+  rotateButton.className = "ship-placement-button";
+  rotateButton.id = "rotate-ship-button";
+  rotateButton.innerHTML = "Rotate";
+
+  rotateButton.addEventListener("click", () => {
+    if (orientation === "h") {
+      orientation = "v";
+    } else if (orientation === "v") {
+      orientation = "h";
+    }
+    renderShipPlacementGameBoard(table, gameboard);
+  });
+
+  const randomizeButton = document.createElement("button");
+  rotateButton.className = "ship-placement-button";
+  randomizeButton.id = "randomize-ships-button";
+  randomizeButton.innerHTML = "Randomize";
+
+  randomizeButton.addEventListener("click", () => {
+    placeShipsRandomly(gameboard);
+    indexOfShipToBePlaced = shipLengths.length;
+    renderShipPlacementGameBoard(table, gameboard);
+  });
+
+  const restartButton = document.createElement("button");
+  restartButton.className = "ship-placement-button";
+  restartButton.id = "restart-ship-placement-button";
+  restartButton.innerHTML = "Restart";
+
+  restartButton.addEventListener("click", () => {
+    gameboard.reset();
+    indexOfShipToBePlaced = 0;
+    renderShipPlacementGameBoard(table, gameboard);
+  });
+
+  const completeShipPlacementButton = document.createElement("button");
+  completeShipPlacementButton.className = "ship-placement-button";
+  completeShipPlacementButton.id = "completed-ship-placement-button";
+  completeShipPlacementButton.innerHTML = "Done";
+
+  completeShipPlacementButton.addEventListener("click", () => {
+    if (indexOfShipToBePlaced === shipLengths.length) {
+      indexOfShipToBePlaced = 0;
+
+      if (currentPlayer === playerOne) {
+        renderShipPlacementGameBoard(
+          preGameShipPlacementTable,
+          playerTwo.gameBoard
+        );
+        currentPlayer = playerTwo;
+      } else if (currentPlayer === playerTwo) {
+        renderGameBoard(playerOneTable, playerOne.gameBoard);
+        renderOpponentGameBoard(playerTwoTable, playerTwo.gameBoard);
+        currentStatus.innerHTML = "Player One's turn";
+        currentPlayer = playerOne;
+        document.getElementById("battleship-pre-game-container").style.display =
+          "none";
+        document.getElementById(
+          "battleship-main-game-container"
+        ).style.display = "inline-block";
+      }
+    }
+  });
+
+  shipPlacementButtonsContainer.appendChild(rotateButton);
+  shipPlacementButtonsContainer.appendChild(randomizeButton);
+  shipPlacementButtonsContainer.appendChild(restartButton);
+  shipPlacementButtonsContainer.appendChild(completeShipPlacementButton);
+};
 
 const renderShipPlacementGameBoard = (table, gameboard) => {
   const gameBoardGrid = gameboard.grid;
@@ -98,78 +169,124 @@ const renderShipPlacementGameBoard = (table, gameboard) => {
       const gameBoardCellContent = document.createElement("div");
       gameBoardCellContent.className = "battleship-cell-content";
 
-      gameBoardCell.addEventListener("mouseover", () => {
-        let shipLength = shipLengths[indexOfShipToBePlaced];
-        if (orientation === "h") {
-          let shipCanBePlacedHorizontally = gameboard.isPlaceable(
-            [y, x],
-            [y, x + shipLength - 1]
-          );
-          console.log(x + shipLength - 1);
-          console.log;
-          if (shipCanBePlacedHorizontally) {
-            for (let i = x; i < x + shipLength && i < 10; i++) {
-              let cell = document.getElementById(
-                `battleship-cell-x-${i}-y-${y}`
-              );
-              cell.style.backgroundColor = "#22FF22";
-            }
-          } else if (!shipCanBePlacedHorizontally) {
-            for (let i = x; i < x + shipLength && i < 10; i++) {
-              let cell = document.getElementById(
-                `battleship-cell-x-${i}-y-${y}`
-              );
-              cell.style.backgroundColor = "#FF2222";
-            }
-          }
-        }
-        if (orientation === "v") {
-          let shipCanBePlacedVertically = gameboard.isPlaceable(
-            [y, x],
-            [y + shipLength - 1, x]
-          );
-          if (shipCanBePlacedVertically) {
-            for (let i = y; i < y + shipLength && i < 10; i++) {
-              let cell = document.getElementById(
-                `battleship-cell-x-${x}-y-${i}`
-              );
-              cell.style.backgroundColor = "green";
-            }
-          } else if (!shipCanBePlacedVertically) {
-            for (let i = y; i < y + shipLength && i < 10; i++) {
-              let cell = document.getElementById(
-                `battleship-cell-x-${x}-y-${i}`
-              );
-              cell.style.backgroundColor = "red";
-            }
-          }
-        }
-      });
+      let isShip = gameBoardGrid[y][x] instanceof Ship;
 
-      gameBoardCell.addEventListener("mouseout", () => {
-        let shipLength = shipLengths[indexOfShipToBePlaced];
-        if (orientation === "h") {
-          for (let i = x; i < x + shipLength && i < 10; i++) {
-            let cell = document.getElementById(`battleship-cell-x-${i}-y-${y}`);
-            cell.style.backgroundColor = "#1581fc";
-          }
-        } else if (orientation === "v") {
-          for (let i = y; i < y + shipLength && i < 10; i++) {
-            let cell = document.getElementById(`battleship-cell-x-${i}-y-${y}`);
-            cell.style.backgroundColor = "#1581fc";
-          }
-        }
-      });
+      if (isShip) {
+        gameBoardCell.classList.toggle("ship");
+      }
 
-      gameBoardCell.addEventListener("click", () => {
-        if (orientation === "h") {
-        }
-      });
+      if (indexOfShipToBePlaced < shipLengths.length && !isShip) {
+        gameBoardCell.addEventListener("mouseover", () => {
+          let shipLength = shipLengths[indexOfShipToBePlaced];
+          if (orientation === "h") {
+            let shipCanBePlacedHorizontally = gameboard.isPlaceable(
+              [y, x],
+              [y, x + shipLength - 1]
+            );
+            if (shipCanBePlacedHorizontally) {
+              for (let i = x; i < x + shipLength && i < 10; i++) {
+                let cell = document.getElementById(
+                  `battleship-cell-x-${i}-y-${y}`
+                );
+                cell.style.backgroundColor = "#22FF22";
+              }
+            } else if (!shipCanBePlacedHorizontally) {
+              for (let i = x; i < x + shipLength && i < 10; i++) {
+                if (gameBoardGrid[y][i] instanceof Ship === false) {
+                  let cell = document.getElementById(
+                    `battleship-cell-x-${i}-y-${y}`
+                  );
+                  cell.style.backgroundColor = "#FF2222";
+                }
+              }
+            }
+          }
+          if (orientation === "v") {
+            let shipCanBePlacedVertically = gameboard.isPlaceable(
+              [y, x],
+              [y + shipLength - 1, x]
+            );
+            if (shipCanBePlacedVertically) {
+              for (let i = y; i < y + shipLength && i < 10; i++) {
+                let cell = document.getElementById(
+                  `battleship-cell-x-${x}-y-${i}`
+                );
+                cell.style.backgroundColor = "green";
+              }
+            } else if (!shipCanBePlacedVertically) {
+              for (let i = y; i < y + shipLength && i < 10; i++) {
+                if (gameBoardGrid[i][x] instanceof Ship === false) {
+                  let cell = document.getElementById(
+                    `battleship-cell-x-${x}-y-${i}`
+                  );
+                  cell.style.backgroundColor = "red";
+                }
+              }
+            }
+          }
+        });
+
+        gameBoardCell.addEventListener("mouseout", () => {
+          let shipLength = shipLengths[indexOfShipToBePlaced];
+          if (orientation === "h") {
+            for (let i = x; i < x + shipLength && i < 10; i++) {
+              if (gameBoardGrid[y][i] instanceof Ship === false) {
+                let cell = document.getElementById(
+                  `battleship-cell-x-${i}-y-${y}`
+                );
+                cell.style.backgroundColor = "#1581fc";
+              }
+            }
+          } else if (orientation === "v") {
+            for (let i = y; i < y + shipLength && i < 10; i++) {
+              if (gameBoardGrid[i][x] instanceof Ship === false) {
+                let cell = document.getElementById(
+                  `battleship-cell-x-${i}-y-${y}`
+                );
+                cell.style.backgroundColor = "#1581fc";
+              }
+            }
+          }
+        });
+
+        gameBoardCell.addEventListener("click", () => {
+          let shipLength = shipLengths[indexOfShipToBePlaced];
+          if (orientation === "h") {
+            let shipCanBePlacedHorizontally = gameboard.isPlaceable(
+              [y, x],
+              [y, x + shipLength - 1]
+            );
+            if (shipCanBePlacedHorizontally) {
+              gameboard.placeShip([y, x], [y, x + shipLength - 1]);
+              renderShipPlacementGameBoard(
+                preGameShipPlacementTable,
+                gameboard
+              );
+              indexOfShipToBePlaced++;
+            }
+          } else if (orientation === "v") {
+            let shipCanBePlacedVertically = gameboard.isPlaceable(
+              [y, x],
+              [y + shipLength - 1, x]
+            );
+            if (shipCanBePlacedVertically) {
+              gameboard.placeShip([y, x], [y + shipLength - 1, x]);
+              renderShipPlacementGameBoard(
+                preGameShipPlacementTable,
+                gameboard
+              );
+              indexOfShipToBePlaced++;
+            }
+          }
+        });
+      }
 
       gameBoardCell.appendChild(gameBoardCellContent);
       gameBoardRow.appendChild(gameBoardCell);
     }
     table.appendChild(gameBoardRow);
+
+    renderShipPlacementButtons(table, gameboard);
   }
 };
 
@@ -216,7 +333,7 @@ const renderOpponentGameBoard = (table, gameboard) => {
           gameboard.receiveAttack([y, x]);
           checkGameState();
 
-          if (prevPlayer === playerTwo && !isGameOver) {
+          if (currentPlayer === playerOne && !isGameOver) {
             if (gamemode === Gamemodes.SINGLEPLAYER) {
               renderOpponentGameBoard(playerTwoTable, playerTwo.gameBoard); // Render attack made from human to computer first
 
@@ -226,13 +343,13 @@ const renderOpponentGameBoard = (table, gameboard) => {
                 checkGameState();
               }, 500);
             } else if (gamemode === Gamemodes.MULTIPLAYER) {
-              prevPlayer = playerOne; // TODO - Add delay when switching displays or add warning before this triggers
+              currentPlayer = playerTwo; // TODO - Add delay when switching displays or add warning before this triggers
               renderGameBoard(playerTwoTable, playerTwo.gameBoard);
               renderOpponentGameBoard(playerOneTable, playerOne.gameBoard);
             }
-          } else if (prevPlayer === playerOne && !isGameOver) {
+          } else if (currentPlayer === playerTwo && !isGameOver) {
             if (gamemode === Gamemodes.MULTIPLAYER) {
-              prevPlayer = playerTwo;
+              currentPlayer = playerOne;
               renderGameBoard(playerOneTable, playerOne.gameBoard);
               renderOpponentGameBoard(playerTwoTable, playerTwo.gameBoard);
             }
@@ -264,6 +381,7 @@ const checkGameState = () => {
 };
 
 const placeShipsRandomly = (gameboard) => {
+  gameboard.reset();
   for (let length of shipLengths) {
     let shipPlaced = false;
     while (!shipPlaced) {
@@ -295,7 +413,7 @@ const resetGame = () => {
   playerOne = new Player();
   playerTwo = new Player();
   isGameOver = false;
-  prevPlayer = playerTwo;
+  currentPlayer = playerOne;
   // placeShipsRandomly(playerOne.gameBoard);
   // placeShipsRandomly(playerTwo.gameBoard);
   // renderGameBoard(playerOneTable, playerOne.gameBoard);
