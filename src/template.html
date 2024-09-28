@@ -10,6 +10,7 @@
         <h3>Battleship</h3>
     </header>
     <main>
+        <h2 id="current-status">Gamemode Selection</h2>
         <div id="battleship-pre-game-container">
             <form id="gamemode-selection-form">
                 <fieldset>
@@ -24,7 +25,13 @@
                     <button type="submit">Start game</button>
                 </fieldset>
             </form>
-            <div class="ship-placement-container">
+            <div id="ship-placement-container">
+                <div id="ship-placement-buttons">
+                    <button type="button" id="rotate-ship-button">Rotate</button>
+                    <button type="button" id="randomize-ships-button">Randomize</button>
+                    <button type="button" id="restart-ship-placement-button">Restart</button>
+                    <button type="button" id="completed-ship-placement-button">Done</button>
+                </div>
                 <div class="gameboard-container">
                     <h3 id="player-to-place-ships-header"></h3>
                     <div class="gameboard">
