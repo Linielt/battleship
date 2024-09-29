@@ -11,7 +11,6 @@ const shipPlacementContainer = document.getElementById(
 const preGameShipPlacementTable = document.getElementById(
   "pre-game-ship-placement-table"
 );
-// const rotateButton = document.getElementById("rotate-ship-button");
 const currentStatus = document.getElementById("current-status");
 const gameOverDialog = document.getElementById("gameover-dialog");
 const newGameButton = document.getElementById("new-game-button");
@@ -345,27 +344,31 @@ const renderOpponentGameBoard = (table, gameboard) => {
 
       if (!gameBoardAttackedGrid[y][x]) {
         gameBoardCell.addEventListener("click", () => {
-          gameboard.receiveAttack([y, x]);
-          checkGameState();
-
           if (currentPlayer === playerOne && !isGameOver) {
+            gameboard.receiveAttack([y, x]);
+            checkGameState();
             if (gamemode === Gamemodes.SINGLEPLAYER) {
-              renderOpponentGameBoard(playerTwoTable, playerTwo.gameBoard); // Render attack made from human to computer first
+              currentPlayer = playerTwo;
+              renderOpponentGameBoard(playerTwoTable, playerTwo.gameBoard);
               currentStatus.innerHTML = "Player Two's turn";
               setTimeout(() => {
-                playerTwo.makeComputerMove(playerOne.gameBoard); // Make this be better or something or change the timing
+                computerAttack(playerOne.gameBoard);
                 renderGameBoard(playerOneTable, playerOne.gameBoard);
                 currentStatus.innerHTML = "Player One's turn";
-                checkGameState();
+                setTimeout(() => {
+                  currentPlayer = playerOne;
+                }, 500);
               }, 500);
             } else if (gamemode === Gamemodes.MULTIPLAYER) {
               currentPlayer = playerTwo; // TODO - Add delay when switching displays or add warning before this triggers
-              renderGameBoard(playerTwoTable, playerTwo.gameBoard);
-              renderOpponentGameBoard(playerOneTable, playerOne.gameBoard);
+              renderGameBoard(playerTwoTable, playerTwo.gameBoard); // Plan: Make hide screen in html file with large z index
+              renderOpponentGameBoard(playerOneTable, playerOne.gameBoard); // Make it appear and then use set timeout to remove after 5 secs
               currentStatus.innerHTML = "Player Two's turn";
             }
           } else if (currentPlayer === playerTwo && !isGameOver) {
             if (gamemode === Gamemodes.MULTIPLAYER) {
+              gameboard.receiveAttack([y, x]);
+              checkGameState();
               currentPlayer = playerOne;
               renderGameBoard(playerOneTable, playerOne.gameBoard);
               renderOpponentGameBoard(playerTwoTable, playerTwo.gameBoard);
@@ -423,10 +426,6 @@ const placeShipsRandomly = (gameboard) => {
   }
 };
 
-// const selectGamemode = () => {
-//   const gamemodeForm = document.getElementById("gamemode-selection-form");
-// };
-
 const resetGame = () => {
   playerOne = new Player();
   playerTwo = new Player();
@@ -440,28 +439,20 @@ gamemodeForm.addEventListener("submit", (e) => {
     'input[name="gamemode"]:checked'
   ).value;
   gamemodeForm.style.display = "none";
-  // Hide form
-  // Display pre game placement dependant on gamemode selected and make the logic for that
-  // Before this though, settle the placing ships thing first
   if (selectedGamemode === "singleplayer") {
     gamemode = Gamemodes.SINGLEPLAYER;
     resetGame();
   } else if (selectedGamemode === "multiplayer") {
     gamemode = Gamemodes.MULTIPLAYER;
-    resetGame(); // Make changes to this later
+    resetGame();
   }
 
   document.getElementById("battleship-pre-game-container").style.display =
     "inline-block";
-  // Make it so the gamemode select is hidden after selection
-  // Then dependant on the gamemode, do logic of placing ships on the respective gameboards
-  // Start game
   currentStatus.textContent = "Player One Ship Placement";
   gamemodeForm.style.display = "none";
   shipPlacementContainer.style.display = "inline-block";
   renderShipPlacementGameBoard(preGameShipPlacementTable, playerOne.gameBoard);
-  // document.getElementById("battleship-main-game-container").style.display =
-  //   "inline-block";
 });
 
 newGameButton.addEventListener("click", () => {
@@ -475,10 +466,68 @@ newGameButton.addEventListener("click", () => {
   currentStatus.innerHTML = "Gamemode Selection";
 });
 
-// Testing code
-// playerOne.gameBoard.placeShip([0, 0], [0, 3]);
-// playerTwo.gameBoard.placeShip([9, 6], [9, 9]);
-// placeShipsRandomly(playerOne.gameBoard); // Move these to condition based code based on gamemode selected and buttons and such
-// placeShipsRandomly(playerTwo.gameBoard);
-// renderGameBoard(playerOneTable, playerOne.gameBoard);
-// renderOpponentGameBoard(playerTwoTable, playerTwo.gameBoard);
+const computerAttack = (opponentGameBoard) => {
+  for (let y = 0; y < opponentGameBoard.grid.length; y++) {
+    for (let x = 0; x < opponentGameBoard.grid[y].length; x++) {
+      if (
+        opponentGameBoard.positionIsHit([y, x]) &&
+        opponentGameBoard.grid[y][x] instanceof Ship &&
+        !opponentGameBoard.grid[y][x].isSunk()
+      ) {
+        let hasHitShip = false;
+        if (opponentGameBoard.isOnBoard([y - 1, x])) {
+          // North
+          hasHitShip = opponentGameBoard.receiveAttack([y - 1, x]);
+        }
+        if (!hasHitShip) {
+          if (opponentGameBoard.isOnBoard([y, x + 1])) {
+            // East
+            hasHitShip = opponentGameBoard.receiveAttack([y, x + 1]);
+          }
+        } else {
+          checkGameState();
+          return;
+        }
+        if (!hasHitShip) {
+          if (opponentGameBoard.isOnBoard([y + 1, x])) {
+            // South
+            hasHitShip = opponentGameBoard.receiveAttack([y + 1, x]);
+          }
+        } else {
+          checkGameState();
+          return;
+        }
+        if (!hasHitShip) {
+          if (opponentGameBoard.isOnBoard([y, x - 1])) {
+            // West
+            hasHitShip = opponentGameBoard.receiveAttack([y, x - 1]);
+          }
+        } else {
+          checkGameState();
+          return;
+        }
+        if (hasHitShip) {
+          checkGameState();
+          return;
+        } else {
+          continue;
+        }
+      }
+    }
+  }
+
+  let hasHitShip = false;
+
+  while (!hasHitShip) {
+    let x = Math.floor(Math.random() * 10);
+    let y = Math.floor(Math.random() * 10);
+
+    if (!opponentGameBoard.positionIsHit([y, x])) {
+      opponentGameBoard.receiveAttack([y, x]);
+      hasHitShip = true;
+    }
+  }
+
+  checkGameState();
+  return;
+};
