@@ -10,13 +10,39 @@ html, body {
 
 body {
     height: 100vh;
+    background-color: #4a4ae9;
+}
+
+header {
+    display: flex;
+    justify-content: center;
 }
 
 main {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 128px;
+    gap: 64px;
+}
+
+#gamemode-select {
+    padding: 64px;
+}
+
+#gamemode-selection-form > fieldset > legend {
+    background-color: #000;
+    color: #fff;
+    padding: 3px 6px;
+}
+
+#gamemode-selection-form > fieldset {
+    display: flex;
+    flex-direction: column;
+}
+
+#gamemode-selection-form > fieldset > button {
+    padding: 16px;
 }
 
 .battleship-main-game-container {
@@ -27,11 +53,9 @@ main {
     display: none;
 }
 
-.draggable-ship {
-    border: 2px solid #00FF;
-    background-color: rgba(0, 0, 255, 0.5);
-    height: 40px;
-    width: 40px;
+#battleship-main-game-container {
+    display: flex;
+    gap: 64px;
 }
 
 .battleship-row {
@@ -45,6 +69,8 @@ main {
     width: 40px;
     height: 40px;
     border: solid black 1px;
+    border-radius: 15%;
+    background-color: #2969b2;
 }
 
 .battleship-cell-content {
@@ -57,12 +83,8 @@ main {
     text-align: center;
 }
 
-.battleship-cell {
-    background-color: #1581fc;
-}
-
 .ship {
-    background-color: #33EE33;
+    background-color: #888888;
 }
 
 .attacked {
@@ -70,9 +92,33 @@ main {
 }
 
 .not-sunk {
-    background-color: #11AA11;
+    background-color: #777777;
 }
 
 .sunk {
     background-color: #EE1111;
+}
+
+#turn-change-dialog {
+    padding: 320px;
+    background-color: rgb(128, 128, 255)
+}
+
+#gameover-dialog {
+    background-color: rgba(255, 255, 255, 0.3);
+    padding: 64px;
+}
+
+.dialog-flex-container {
+    background-color: transparent;
+    display: flex;
+    flex-direction: column;
+    font-size: 1.5em;
+    font-weight: 600;
+    gap: 32px;
+}
+
+#new-game-button {
+    padding: 16px;
+    background-color: rgba(255, 255, 255, 0.6);
 }

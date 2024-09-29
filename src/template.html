@@ -7,7 +7,7 @@
 </head>
 <body>
     <header>
-        <h3>Battleship</h3>
+        <h1>Battleship</h3>
     </header>
     <main>
         <h2 id="current-status">Gamemode Selection</h2>
@@ -52,10 +52,17 @@
     
                 </table>
             </div>
+            <dialog id="turn-change-dialog">
+                <div class="dialog-flex-container">
+                    <p>Switching turns in 5 seconds</p>
+                </div>
+            </dialog>
         </div>
         <dialog id="gameover-dialog">
-            <p id="winner-text"></p>
-            <button type="button" id="new-game-button">New Game</button>
+            <div class="dialog-flex-container">
+                <p id="winner-text"></p>
+                <button type="button" id="new-game-button">New Game</button>
+            </div>
         </dialog>
     </main>
     <footer>

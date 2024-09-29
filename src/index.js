@@ -2,7 +2,6 @@ import { Player } from "./player";
 import { Ship } from "./ship";
 import { Gamemodes } from "./gamemode";
 import "./styles.css";
-import { GameBoard } from "./gameboard";
 
 const gamemodeForm = document.getElementById("gamemode-selection-form");
 const shipPlacementContainer = document.getElementById(
@@ -19,8 +18,8 @@ const playerOneTable = document.getElementById("player-one-table");
 const playerTwoTable = document.getElementById("player-two-table");
 const shipLengths = [5, 4, 3, 3, 2];
 
-let playerOne = new Player();
-let playerTwo = new Player();
+let playerOne = new Player("Player One"); // Try to get some of these global varaibles into a class
+let playerTwo = new Player("Player Two");
 let currentPlayer = playerOne;
 let gamemode = Gamemodes.SINGLEPLAYER;
 let isGameOver = false;
@@ -128,12 +127,12 @@ const renderShipPlacementButtons = (table, gameboard) => {
         placeShipsRandomly(playerTwo.gameBoard);
         renderGameBoard(playerOneTable, playerOne.gameBoard);
         renderOpponentGameBoard(playerTwoTable, playerTwo.gameBoard);
-        currentStatus.innerHTML = "Player One's turn";
+        changeCurrentStatus("Player One's turn");
         document.getElementById("battleship-pre-game-container").style.display =
           "none";
         document.getElementById(
           "battleship-main-game-container"
-        ).style.display = "inline-block";
+        ).style.display = "flex";
       }
       if (currentPlayer === playerOne && gamemode === Gamemodes.MULTIPLAYER) {
         renderShipPlacementGameBoard(
@@ -141,20 +140,20 @@ const renderShipPlacementButtons = (table, gameboard) => {
           playerTwo.gameBoard
         );
         currentPlayer = playerTwo;
-        currentStatus.innerHTML = "Player Two Ship Placement";
+        changeCurrentStatus("Player Two Ship Placement");
       } else if (
         currentPlayer === playerTwo &&
         gamemode === Gamemodes.MULTIPLAYER
       ) {
         renderGameBoard(playerOneTable, playerOne.gameBoard);
         renderOpponentGameBoard(playerTwoTable, playerTwo.gameBoard);
-        currentStatus.innerHTML = "Player One's turn";
+        changeCurrentStatus("Player One's turn");
         currentPlayer = playerOne;
         document.getElementById("battleship-pre-game-container").style.display =
           "none";
         document.getElementById(
           "battleship-main-game-container"
-        ).style.display = "inline-block";
+        ).style.display = "flex";
       }
     }
   });
@@ -165,10 +164,10 @@ const renderShipPlacementButtons = (table, gameboard) => {
   shipPlacementButtonsContainer.appendChild(completeShipPlacementButton);
 };
 
-const renderShipPlacementGameBoard = (table, gameboard) => {
-  const gameBoardGrid = gameboard.grid;
+const renderShipPlacementGameBoard = (gameboard) => {
+  const gameBoardGrid = gameboard.grid; // Get rid of table parameter
 
-  table.innerHTML = "";
+  preGameShipPlacementTable.innerHTML = "";
 
   for (let y = 0; y < gameBoardGrid.length; y++) {
     let gameBoardRow = document.createElement("tr");
@@ -225,7 +224,7 @@ const renderShipPlacementGameBoard = (table, gameboard) => {
                 let cell = document.getElementById(
                   `battleship-cell-x-${x}-y-${i}`
                 );
-                cell.style.backgroundColor = "green";
+                cell.style.backgroundColor = "#22FF22";
               }
             } else if (!shipCanBePlacedVertically) {
               for (let i = y; i < y + shipLength && i < 10; i++) {
@@ -233,7 +232,7 @@ const renderShipPlacementGameBoard = (table, gameboard) => {
                   let cell = document.getElementById(
                     `battleship-cell-x-${x}-y-${i}`
                   );
-                  cell.style.backgroundColor = "red";
+                  cell.style.backgroundColor = "#FF2222";
                 }
               }
             }
@@ -248,16 +247,16 @@ const renderShipPlacementGameBoard = (table, gameboard) => {
                 let cell = document.getElementById(
                   `battleship-cell-x-${i}-y-${y}`
                 );
-                cell.style.backgroundColor = "#1581fc";
+                cell.style.backgroundColor = "#2969b2";
               }
             }
           } else if (orientation === "v") {
             for (let i = y; i < y + shipLength && i < 10; i++) {
               if (gameBoardGrid[i][x] instanceof Ship === false) {
                 let cell = document.getElementById(
-                  `battleship-cell-x-${i}-y-${y}`
+                  `battleship-cell-x-${x}-y-${i}`
                 );
-                cell.style.backgroundColor = "#1581fc";
+                cell.style.backgroundColor = "#2969b2";
               }
             }
           }
@@ -298,9 +297,9 @@ const renderShipPlacementGameBoard = (table, gameboard) => {
       gameBoardCell.appendChild(gameBoardCellContent);
       gameBoardRow.appendChild(gameBoardCell);
     }
-    table.appendChild(gameBoardRow);
+    preGameShipPlacementTable.appendChild(gameBoardRow);
 
-    renderShipPlacementButtons(table, gameboard);
+    renderShipPlacementButtons(preGameShipPlacementTable, gameboard);
   }
 };
 
@@ -344,35 +343,57 @@ const renderOpponentGameBoard = (table, gameboard) => {
 
       if (!gameBoardAttackedGrid[y][x]) {
         gameBoardCell.addEventListener("click", () => {
-          if (currentPlayer === playerOne && !isGameOver) {
+          if (
+            currentPlayer === playerOne &&
+            !isGameOver &&
+            gameboard === playerTwo.gameBoard
+          ) {
             gameboard.receiveAttack([y, x]);
-            checkGameState();
             if (gamemode === Gamemodes.SINGLEPLAYER) {
               currentPlayer = playerTwo;
               renderOpponentGameBoard(playerTwoTable, playerTwo.gameBoard);
-              currentStatus.innerHTML = "Player Two's turn";
+              changeCurrentStatus("Player Two's turn");
               setTimeout(() => {
                 computerAttack(playerOne.gameBoard);
                 renderGameBoard(playerOneTable, playerOne.gameBoard);
-                currentStatus.innerHTML = "Player One's turn";
+                changeCurrentStatus("Player One's turn");
                 setTimeout(() => {
                   currentPlayer = playerOne;
                 }, 500);
               }, 500);
             } else if (gamemode === Gamemodes.MULTIPLAYER) {
               currentPlayer = playerTwo; // TODO - Add delay when switching displays or add warning before this triggers
-              renderGameBoard(playerTwoTable, playerTwo.gameBoard); // Plan: Make hide screen in html file with large z index
-              renderOpponentGameBoard(playerOneTable, playerOne.gameBoard); // Make it appear and then use set timeout to remove after 5 secs
-              currentStatus.innerHTML = "Player Two's turn";
+              renderOpponentGameBoard(playerTwoTable, playerTwo.gameBoard);
+              changeCurrentStatus(
+                "You have 5 seconds to hand your device to the other player"
+              );
+              setTimeout(() => {
+                renderOpponentGameBoard(playerTwoTable, playerTwo.gameBoard);
+                renderGameBoard(playerTwoTable, playerTwo.gameBoard);
+                renderOpponentGameBoard(playerOneTable, playerOne.gameBoard); // Make it appear and then use set timeout to remove after 5 secs
+                changeCurrentStatus("Player Two's turn");
+                checkGameState();
+              }, 5000);
             }
-          } else if (currentPlayer === playerTwo && !isGameOver) {
+          } else if (
+            currentPlayer === playerTwo &&
+            !isGameOver &&
+            gameboard === playerOne.gameBoard
+          ) {
             if (gamemode === Gamemodes.MULTIPLAYER) {
               gameboard.receiveAttack([y, x]);
-              checkGameState();
+              changeCurrentStatus(
+                "You have 5 seconds to hand your device to the other player"
+              );
+              renderOpponentGameBoard(playerOneTable, playerOne.gameBoard);
               currentPlayer = playerOne;
-              renderGameBoard(playerOneTable, playerOne.gameBoard);
-              renderOpponentGameBoard(playerTwoTable, playerTwo.gameBoard);
-              currentStatus.innerHTML = "Player One's turn";
+              setTimeout(() => {
+                checkGameState();
+                // renderOpponentGameBoard(playerOneTable, playerOne.gameBoard);
+                renderGameBoard(playerOneTable, playerOne.gameBoard);
+                renderOpponentGameBoard(playerTwoTable, playerTwo.gameBoard);
+                changeCurrentStatus("Player One's turn");
+              }, 5000);
             }
           }
         });
@@ -383,6 +404,7 @@ const renderOpponentGameBoard = (table, gameboard) => {
 };
 
 const checkGameState = () => {
+  // Take game object?
   if (playerOne.gameBoard.areAllShipsSunk()) {
     winnerText.innerHTML = "Player Two wins!";
     gameOverDialog.showModal();
@@ -399,6 +421,10 @@ const checkGameState = () => {
     renderGameBoard(playerOneTable, playerOne.gameBoard);
     renderGameBoard(playerTwoTable, playerTwo.gameBoard);
   }
+};
+
+const changeCurrentStatus = (message) => {
+  currentStatus.innerHTML = message;
 };
 
 const placeShipsRandomly = (gameboard) => {
@@ -427,8 +453,8 @@ const placeShipsRandomly = (gameboard) => {
 };
 
 const resetGame = () => {
-  playerOne = new Player();
-  playerTwo = new Player();
+  playerOne = new Player("Player One");
+  playerTwo = new Player("Player Two");
   isGameOver = false;
   currentPlayer = playerOne;
 };
@@ -449,7 +475,7 @@ gamemodeForm.addEventListener("submit", (e) => {
 
   document.getElementById("battleship-pre-game-container").style.display =
     "inline-block";
-  currentStatus.textContent = "Player One Ship Placement";
+  changeCurrentStatus("Player One Ship Placement");
   gamemodeForm.style.display = "none";
   shipPlacementContainer.style.display = "inline-block";
   renderShipPlacementGameBoard(preGameShipPlacementTable, playerOne.gameBoard);
@@ -463,7 +489,7 @@ newGameButton.addEventListener("click", () => {
   shipPlacementContainer.style.display = "none";
   document.getElementById("battleship-main-game-container").style.display =
     "none";
-  currentStatus.innerHTML = "Gamemode Selection";
+  changeCurrentStatus("Gamemode Selection");
 });
 
 const computerAttack = (opponentGameBoard) => {

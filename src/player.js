@@ -2,8 +2,10 @@ const { GameBoard } = require("./gameboard");
 
 export class Player {
   #gameBoard;
+  #name;
 
-  constructor() {
+  constructor(name) {
+    this.#name = name;
     this.#gameBoard = new GameBoard();
   }
 
