@@ -71,7 +71,7 @@ const renderGameBoard = (table, gameboard) => {
   }
 };
 
-const renderShipPlacementButtons = (table, gameboard) => {
+const renderShipPlacementButtons = (gameboard) => {
   const shipPlacementButtonsContainer = document.getElementById(
     "ship-placement-buttons-container"
   );
@@ -89,7 +89,7 @@ const renderShipPlacementButtons = (table, gameboard) => {
     } else if (orientation === "v") {
       orientation = "h";
     }
-    renderShipPlacementGameBoard(table, gameboard);
+    renderShipPlacementGameBoard(gameboard);
   });
 
   const randomizeButton = document.createElement("button");
@@ -100,7 +100,7 @@ const renderShipPlacementButtons = (table, gameboard) => {
   randomizeButton.addEventListener("click", () => {
     placeShipsRandomly(gameboard);
     indexOfShipToBePlaced = shipLengths.length;
-    renderShipPlacementGameBoard(table, gameboard);
+    renderShipPlacementGameBoard(gameboard);
   });
 
   const restartButton = document.createElement("button");
@@ -111,7 +111,7 @@ const renderShipPlacementButtons = (table, gameboard) => {
   restartButton.addEventListener("click", () => {
     gameboard.reset();
     indexOfShipToBePlaced = 0;
-    renderShipPlacementGameBoard(table, gameboard);
+    renderShipPlacementGameBoard(gameboard);
   });
 
   const completeShipPlacementButton = document.createElement("button");
@@ -135,10 +135,7 @@ const renderShipPlacementButtons = (table, gameboard) => {
         ).style.display = "flex";
       }
       if (currentPlayer === playerOne && gamemode === Gamemodes.MULTIPLAYER) {
-        renderShipPlacementGameBoard(
-          preGameShipPlacementTable,
-          playerTwo.gameBoard
-        );
+        renderShipPlacementGameBoard(playerTwo.gameBoard);
         currentPlayer = playerTwo;
         changeCurrentStatus("Player Two Ship Placement");
       } else if (
@@ -271,10 +268,7 @@ const renderShipPlacementGameBoard = (gameboard) => {
             );
             if (shipCanBePlacedHorizontally) {
               gameboard.placeShip([y, x], [y, x + shipLength - 1]);
-              renderShipPlacementGameBoard(
-                preGameShipPlacementTable,
-                gameboard
-              );
+              renderShipPlacementGameBoard(gameboard);
               indexOfShipToBePlaced++;
             }
           } else if (orientation === "v") {
@@ -284,10 +278,7 @@ const renderShipPlacementGameBoard = (gameboard) => {
             );
             if (shipCanBePlacedVertically) {
               gameboard.placeShip([y, x], [y + shipLength - 1, x]);
-              renderShipPlacementGameBoard(
-                preGameShipPlacementTable,
-                gameboard
-              );
+              renderShipPlacementGameBoard(gameboard);
               indexOfShipToBePlaced++;
             }
           }
@@ -299,7 +290,7 @@ const renderShipPlacementGameBoard = (gameboard) => {
     }
     preGameShipPlacementTable.appendChild(gameBoardRow);
 
-    renderShipPlacementButtons(preGameShipPlacementTable, gameboard);
+    renderShipPlacementButtons(gameboard);
   }
 };
 
@@ -478,7 +469,7 @@ gamemodeForm.addEventListener("submit", (e) => {
   changeCurrentStatus("Player One Ship Placement");
   gamemodeForm.style.display = "none";
   shipPlacementContainer.style.display = "inline-block";
-  renderShipPlacementGameBoard(preGameShipPlacementTable, playerOne.gameBoard);
+  renderShipPlacementGameBoard(playerOne.gameBoard);
 });
 
 newGameButton.addEventListener("click", () => {
