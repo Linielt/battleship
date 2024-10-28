@@ -162,7 +162,7 @@ const renderShipPlacementButtons = (gameboard) => {
 };
 
 const renderShipPlacementGameBoard = (gameboard) => {
-  const gameBoardGrid = gameboard.grid; // Get rid of table parameter
+  const gameBoardGrid = gameboard.grid;
 
   preGameShipPlacementTable.innerHTML = "";
 
@@ -359,7 +359,7 @@ const renderOpponentGameBoard = (table, gameboard) => {
                 "You have 5 seconds to hand your device to the other player"
               );
               setTimeout(() => {
-                renderOpponentGameBoard(playerTwoTable, playerTwo.gameBoard);
+                // renderOpponentGameBoard(playerTwoTable, playerTwo.gameBoard);
                 renderGameBoard(playerTwoTable, playerTwo.gameBoard);
                 renderOpponentGameBoard(playerOneTable, playerOne.gameBoard); // Make it appear and then use set timeout to remove after 5 secs
                 changeCurrentStatus("Player Two's turn");
