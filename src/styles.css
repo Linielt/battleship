@@ -10,7 +10,7 @@ html, body {
 
 body {
     min-height: 100dvh;
-    background-color: #4a4ae9;
+    background-color: #2a2aa4;
 }
 
 header {
@@ -48,7 +48,7 @@ main {
     padding: 16px;
     border-radius: 12px;
     font-size: 1.2rem;
-    background-color: #2aaae9;
+    background-color: #1c739f;
 }
 
 .battleship-main-game-container {
@@ -69,7 +69,7 @@ main {
     padding: 8px;
     border-radius: 9px;
     font-size: 1rem;
-    background-color: #2aaae9;
+    background-color: #1c739f;
 }
 
 #battleship-main-game-container {
