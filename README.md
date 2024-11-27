@@ -19,8 +19,10 @@ The game ends when all ships have been sunk on any given board.
 
 ## What to improve
 
-I am working on refactoring a majority of the code as it is heavily reliant on globally scoped variables and I am going to
+I am working on refactoring a majority of the code as it is heavily reliant on globally scoped variables and I am going to try to
 break down more code into separate classes, functions and files as it is very messy and hard to read.
+
+It may take significant time as most of the code is reliant on being aware of the current game state so I don't expect to be able to get back to this immediately given that I am busy with University and other commitments
 
 ## Build
 
