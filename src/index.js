@@ -126,7 +126,7 @@ const renderShipPlacementButtons = (gameboard) => {
   });
 
   const randomizeButton = document.createElement("button");
-  rotateButton.className = "ship-placement-button";
+  randomizeButton.className = "ship-placement-button";
   randomizeButton.id = "randomize-ships-button";
   randomizeButton.innerHTML = "Randomize";
 
@@ -136,12 +136,12 @@ const renderShipPlacementButtons = (gameboard) => {
     renderShipPlacementGameBoard(gameboard);
   });
 
-  const restartButton = document.createElement("button");
-  restartButton.className = "ship-placement-button";
-  restartButton.id = "restart-ship-placement-button";
-  restartButton.innerHTML = "Restart";
+  const resetButton = document.createElement("button");
+  resetButton.className = "ship-placement-button";
+  resetButton.id = "reset-ship-placement-button";
+  resetButton.innerHTML = "Reset";
 
-  restartButton.addEventListener("click", () => {
+  resetButton.addEventListener("click", () => {
     gameboard.reset();
     indexOfShipToBePlaced = 0;
     renderShipPlacementGameBoard(gameboard);
@@ -193,7 +193,7 @@ const renderShipPlacementButtons = (gameboard) => {
 
   shipPlacementButtonsContainer.appendChild(rotateButton);
   shipPlacementButtonsContainer.appendChild(randomizeButton);
-  shipPlacementButtonsContainer.appendChild(restartButton);
+  shipPlacementButtonsContainer.appendChild(resetButton);
   shipPlacementButtonsContainer.appendChild(completeShipPlacementButton);
 };
 
