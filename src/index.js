@@ -397,7 +397,9 @@ const renderOpponentGameBoard = (table, gameboard) => {
               changeCurrentStatus(
                 "You have 5 seconds to hand your device to the other player"
               );
-              setTimeout(renderPlayerSwitch(currentPlayer), 5000);
+              setTimeout(() => {
+                renderPlayerSwitch(playerOne);
+              }, 5000);
             }
           } else if (
             currentPlayer === playerTwo &&
@@ -405,13 +407,15 @@ const renderOpponentGameBoard = (table, gameboard) => {
             gameboard === playerOne.gameBoard
           ) {
             if (gamemode === Gamemodes.MULTIPLAYER) {
+              currentPlayer = playerOne;
               gameboard.receiveAttack([y, x]);
               changeCurrentStatus(
                 "You have 5 seconds to hand your device to the other player"
               );
               renderOpponentGameBoard(playerOneTable, playerOne.gameBoard);
-              currentPlayer = playerOne;
-              setTimeout(renderPlayerSwitch(currentPlayer), 5000);
+              setTimeout(() => {
+                renderPlayerSwitch(playerTwo);
+              }, 5000);
             }
           }
         });
