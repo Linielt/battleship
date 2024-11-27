@@ -26,6 +26,39 @@ let isGameOver = false;
 let indexOfShipToBePlaced = 0;
 let orientation = "h";
 
+newGameButton.addEventListener("click", () => {
+  gameOverDialog.close();
+  gamemodeForm.style.display = "block";
+  document.getElementById("battleship-pre-game-container").style.display =
+    "block";
+  shipPlacementContainer.style.display = "none";
+  document.getElementById("battleship-main-game-container").style.display =
+    "none";
+  changeCurrentStatus("Gamemode Selection");
+});
+
+gamemodeForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  let selectedGamemode = document.querySelector(
+    'input[name="gamemode"]:checked'
+  ).value;
+  gamemodeForm.style.display = "none";
+  if (selectedGamemode === "singleplayer") {
+    gamemode = Gamemodes.SINGLEPLAYER;
+    resetGame();
+  } else if (selectedGamemode === "multiplayer") {
+    gamemode = Gamemodes.MULTIPLAYER;
+    resetGame();
+  }
+
+  document.getElementById("battleship-pre-game-container").style.display =
+    "inline-block";
+  changeCurrentStatus("Player One Ship Placement");
+  gamemodeForm.style.display = "none";
+  shipPlacementContainer.style.display = "inline-block";
+  renderShipPlacementGameBoard(playerOne.gameBoard);
+});
+
 const renderGameBoard = (table, gameboard) => {
   const gameBoardGrid = gameboard.grid;
   const gameBoardAttackedGrid = gameboard.attackedGrid;
@@ -120,7 +153,10 @@ const renderShipPlacementButtons = (gameboard) => {
   completeShipPlacementButton.innerHTML = "Done";
 
   completeShipPlacementButton.addEventListener("click", () => {
-    if (indexOfShipToBePlaced === shipLengths.length) {
+    const isShipPlacementFinished =
+      indexOfShipToBePlaced === shipLengths.length;
+
+    if (isShipPlacementFinished) {
       indexOfShipToBePlaced = 0;
 
       if (currentPlayer === playerOne && gamemode === Gamemodes.SINGLEPLAYER) {
@@ -353,13 +389,12 @@ const renderOpponentGameBoard = (table, gameboard) => {
                 }, 500);
               }, 500);
             } else if (gamemode === Gamemodes.MULTIPLAYER) {
-              currentPlayer = playerTwo; // TODO - Add delay when switching displays or add warning before this triggers
+              currentPlayer = playerTwo;
               renderOpponentGameBoard(playerTwoTable, playerTwo.gameBoard);
               changeCurrentStatus(
                 "You have 5 seconds to hand your device to the other player"
               );
               setTimeout(() => {
-                // renderOpponentGameBoard(playerTwoTable, playerTwo.gameBoard);
                 renderGameBoard(playerTwoTable, playerTwo.gameBoard);
                 renderOpponentGameBoard(playerOneTable, playerOne.gameBoard); // Make it appear and then use set timeout to remove after 5 secs
                 changeCurrentStatus("Player Two's turn");
@@ -380,7 +415,6 @@ const renderOpponentGameBoard = (table, gameboard) => {
               currentPlayer = playerOne;
               setTimeout(() => {
                 checkGameState();
-                // renderOpponentGameBoard(playerOneTable, playerOne.gameBoard);
                 renderGameBoard(playerOneTable, playerOne.gameBoard);
                 renderOpponentGameBoard(playerTwoTable, playerTwo.gameBoard);
                 changeCurrentStatus("Player One's turn");
@@ -395,7 +429,6 @@ const renderOpponentGameBoard = (table, gameboard) => {
 };
 
 const checkGameState = () => {
-  // Take game object?
   if (playerOne.gameBoard.areAllShipsSunk()) {
     winnerText.innerHTML = "Player Two wins!";
     gameOverDialog.showModal();
@@ -420,6 +453,7 @@ const changeCurrentStatus = (message) => {
 
 const placeShipsRandomly = (gameboard) => {
   gameboard.reset();
+
   for (let length of shipLengths) {
     let shipPlaced = false;
     while (!shipPlaced) {
@@ -449,39 +483,6 @@ const resetGame = () => {
   isGameOver = false;
   currentPlayer = playerOne;
 };
-
-gamemodeForm.addEventListener("submit", (e) => {
-  e.preventDefault();
-  let selectedGamemode = document.querySelector(
-    'input[name="gamemode"]:checked'
-  ).value;
-  gamemodeForm.style.display = "none";
-  if (selectedGamemode === "singleplayer") {
-    gamemode = Gamemodes.SINGLEPLAYER;
-    resetGame();
-  } else if (selectedGamemode === "multiplayer") {
-    gamemode = Gamemodes.MULTIPLAYER;
-    resetGame();
-  }
-
-  document.getElementById("battleship-pre-game-container").style.display =
-    "inline-block";
-  changeCurrentStatus("Player One Ship Placement");
-  gamemodeForm.style.display = "none";
-  shipPlacementContainer.style.display = "inline-block";
-  renderShipPlacementGameBoard(playerOne.gameBoard);
-});
-
-newGameButton.addEventListener("click", () => {
-  gameOverDialog.close();
-  gamemodeForm.style.display = "block";
-  document.getElementById("battleship-pre-game-container").style.display =
-    "block";
-  shipPlacementContainer.style.display = "none";
-  document.getElementById("battleship-main-game-container").style.display =
-    "none";
-  changeCurrentStatus("Gamemode Selection");
-});
 
 const computerAttack = (opponentGameBoard) => {
   for (let y = 0; y < opponentGameBoard.grid.length; y++) {
