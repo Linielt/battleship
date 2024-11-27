@@ -223,6 +223,7 @@ const renderShipPlacementGameBoard = (gameboard) => {
 
       if (indexOfShipToBePlaced < shipLengths.length && !isShip) {
         gameBoardCell.addEventListener("mouseover", () => {
+          // TODO - Move this block of code elsewhere
           let shipLength = shipLengths[indexOfShipToBePlaced];
           if (orientation === "h") {
             let shipCanBePlacedHorizontally = gameboard.isPlaceable(
@@ -273,6 +274,7 @@ const renderShipPlacementGameBoard = (gameboard) => {
         });
 
         gameBoardCell.addEventListener("mouseout", () => {
+          // TODO - Move this code elsewhere
           let shipLength = shipLengths[indexOfShipToBePlaced];
           if (orientation === "h") {
             for (let i = x; i < x + shipLength && i < 10; i++) {
@@ -296,6 +298,7 @@ const renderShipPlacementGameBoard = (gameboard) => {
         });
 
         gameBoardCell.addEventListener("click", () => {
+          // Move this code elsewhere
           let shipLength = shipLengths[indexOfShipToBePlaced];
           if (orientation === "h") {
             let shipCanBePlacedHorizontally = gameboard.isPlaceable(
@@ -394,12 +397,7 @@ const renderOpponentGameBoard = (table, gameboard) => {
               changeCurrentStatus(
                 "You have 5 seconds to hand your device to the other player"
               );
-              setTimeout(() => {
-                renderGameBoard(playerTwoTable, playerTwo.gameBoard);
-                renderOpponentGameBoard(playerOneTable, playerOne.gameBoard); // Make it appear and then use set timeout to remove after 5 secs
-                changeCurrentStatus("Player Two's turn");
-                checkGameState();
-              }, 5000);
+              setTimeout(renderPlayerSwitch(currentPlayer), 5000);
             }
           } else if (
             currentPlayer === playerTwo &&
@@ -413,18 +411,27 @@ const renderOpponentGameBoard = (table, gameboard) => {
               );
               renderOpponentGameBoard(playerOneTable, playerOne.gameBoard);
               currentPlayer = playerOne;
-              setTimeout(() => {
-                checkGameState();
-                renderGameBoard(playerOneTable, playerOne.gameBoard);
-                renderOpponentGameBoard(playerTwoTable, playerTwo.gameBoard);
-                changeCurrentStatus("Player One's turn");
-              }, 5000);
+              setTimeout(renderPlayerSwitch(currentPlayer), 5000);
             }
           }
         });
       }
     }
     table.appendChild(gameBoardRow);
+  }
+};
+
+const renderPlayerSwitch = (currentPlayer) => {
+  checkGameState();
+
+  if (currentPlayer === playerOne) {
+    renderGameBoard(playerTwoTable, playerTwo.gameBoard);
+    renderOpponentGameBoard(playerOneTable, playerOne.gameBoard);
+    changeCurrentStatus("Player Two's turn");
+  } else if (currentPlayer === playerTwo) {
+    renderGameBoard(playerOneTable, playerOne.gameBoard);
+    renderOpponentGameBoard(playerTwoTable, playerTwo.gameBoard);
+    changeCurrentStatus("Player One's turn");
   }
 };
 
